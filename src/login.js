@@ -1,5 +1,5 @@
 import React from "react";
-import { Form,Row,Col } from "react-bootstrap";
+import { Form,Row,Col ,Modal,Spinner} from "react-bootstrap";
 import Content from "./Content.js"
 import {BrowserRouter,Redirect,Route} from "react-router-dom";
 
@@ -10,11 +10,16 @@ export default class Login extends React.Component{
     {
         super(props);
         this.state={
+            toast:false,
             data:null
         }
     }
+    toggleToast=()=>{
+        this.setState({toast:!this.state.toast});
+    }
     login=async(event)=>{
         event.preventDefault();
+        this.toggleToast();
         try{
             let details={
                 username:this.username.current.value,
@@ -70,6 +75,10 @@ export default class Login extends React.Component{
                             <Form.Control ref={this.password} type="password" placeholder="enter password.." required={true} className="mb-2" />
                             <button type="submit" className="buton mb-2">Submit</button>
                         </Form>
+                        <Modal show={this.state.toast} onHide={this.toggleToast} backdrop="static">
+                            <Modal.Header>Please Wait..<Spinner animation="border" />
+                            </ Modal.Header>
+                        </Modal> 
                     </Col>
                 </Row>
 
