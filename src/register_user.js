@@ -4,18 +4,27 @@ import {Row,Col,Form,Modal,Spinner} from "react-bootstrap";
 export default class RegisterUser extends React.Component{
     username=React.createRef();
     password=React.createRef();
+    confirm_password=React.createRef();
+
+
     constructor(props)
     {
         super(props);
         this.state={
             toast:false,
             spinner:false,
+            password_confirmed:false,
+            password_entered:false,
             message:""
         }
     }
+
+
     toggleToast=()=>{
         this.setState({toast:!this.state.toast});
     }
+
+
     register=async(event)=>{
         event.preventDefault();
         this.setState({spinner:true})
@@ -53,18 +62,33 @@ export default class RegisterUser extends React.Component{
         }
 
     }
+
+
+    passwordStatus=()=>{
+        this.confirm_password.current.value="";
+        (this.password.current.value.length)?this.setState({password_entered:true,password_confirmed:false}):this.setState({password_entered:false,password_confirmed:false});
+
+    }
+
+
+    confirmPassword=()=>{
+        (this.password.current.value===this.confirm_password.current.value)?this.setState({password_confirmed:true}):this.setState({password_confirmed:false});
+    }
+
+
     render()
     {
         return (
             <Col xs="12">
                 <Row className="justify-content-center">
-                    <Col xs="6 ">
+                    <Col md="6" xs="12">
                         <Form onSubmit={this.register} className="box box-shadow text-center">
                             <h5 className="heading">!!E-Mail verified!!</h5>
                             <h5 className="heading">New user form</h5>
                             <Form.Control ref={this.username} type="text" placeholder="Enter username.." required={true} className="mb-2" />
-                            <Form.Control ref={this.password} type="password" placeholder="Enter Password.." required={true} className="mb-2"/>
-                            <button type="submit" className="buton mb-2">Submit</button>
+                            <Form.Control ref={this.password} type="password" placeholder="Enter Password.." required={true} className="mb-2" onChange={this.passwordStatus} />
+                            <Form.Control ref={this.confirm_password} type="password" placeholder="Confirm Password.." required={true} className="mb-2" onChange={this.confirmPassword} disabled={!this.state.password_entered}/>
+                            <button type="submit" className="buton mb-2" hidden={!this.state.password_confirmed}>Submit</button>
                         </Form>
                     </Col>
                 </Row>

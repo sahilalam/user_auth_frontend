@@ -56,11 +56,10 @@ export default class RegisterMail extends React.Component{
     
     render()
     {
-    
         return (
             <Col xs="12">
                 <Row className="justify-content-center">
-                <Col xs="6">
+                <Col md="6" xs="12">
                     <Form onSubmit={this.register} className="box box-shadow text-center">
                         <h5 className="heading">Register your E-Mail</h5>
                         <Form.Control ref={this.email} type="email" required={true} placeholder="Enter your email to register.." className="mb-2" />

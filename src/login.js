@@ -2,8 +2,10 @@ import React from "react";
 import { Form,Row,Col ,Modal,Spinner} from "react-bootstrap";
 import Content from "./Content.js"
 import {BrowserRouter,Redirect,Route} from "react-router-dom";
+import Context from "./Context.js";
 
 export default class Login extends React.Component{
+    static contextType=Context;
     username=React.createRef();
     password=React.createRef();
     constructor(props)
@@ -11,6 +13,8 @@ export default class Login extends React.Component{
         super(props);
         this.state={
             toast:false,
+            successful:false,
+            spinner:false,
             data:null
         }
     }
@@ -19,6 +23,7 @@ export default class Login extends React.Component{
     }
     login=async(event)=>{
         event.preventDefault();
+        this.setState({spinner:true});
         this.toggleToast();
         try{
             let details={
@@ -42,49 +47,64 @@ export default class Login extends React.Component{
 
             });
             data=await data.json();
-            console.log(data);
-            this.setState({data:(data.data)?data.data:data.message});
+            if(data.data)
+            {
+                this.context.login();
+                this.setState({data:data.data,successful:true});
+            }
+            else
+            {
+                this.setState({data:data.message,successful:false,spinner:false});
+            }
+            
+            ;
 
         }
         catch(err)
         {
             console.log(err)
-            this.setState({data:err.message});
+            this.setState({data:err.message,successful:false,spinner:false});
         }
     }
     render()
     {
-        return(
-        <Col xs="12">   
-            {this.state.data
-            ?
-                <BrowserRouter>
-                    <Redirect to="/home"></Redirect>
-                    <Route path="/home">
-                        <Content data={this.state.data}/>
-                    </Route>
+        return (
+            <Col xs="12">   
+                {this.state.successful
+                ?
                     
-                </BrowserRouter>
-                
-            :
-                <Row className="justify-content-center">
-                    <Col xs="6">
-                        <Form onSubmit={this.login} className="box box-shadow text-center">
-                            <h5 className="heading"> Login </h5>
-                            <Form.Control ref={this.username} type="text" placeholder="enter your username.." required={true} className="mb-2" />
-                            <Form.Control ref={this.password} type="password" placeholder="enter password.." required={true} className="mb-2" />
-                            <button type="submit" className="buton mb-2">Submit</button>
-                        </Form>
-                        <Modal show={this.state.toast} onHide={this.toggleToast} backdrop="static">
-                            <Modal.Header>Please Wait..<Spinner animation="border" />
-                            </ Modal.Header>
-                        </Modal> 
-                    </Col>
-                </Row>
+                    <BrowserRouter>
+                        <Redirect to="/home"></Redirect>
+                        <Route path="/home">
+                            <Content data={this.state.data}/>
+                        </Route>
+                        
+                    </BrowserRouter>
+                    
+                :
+                    <Row className="justify-content-center">
+                        <Col md="6" xs="12">
+                            <Form onSubmit={this.login} className="box box-shadow text-center">
+                                <h5 className="heading"> Login </h5>
+                                <Form.Control ref={this.username} type="text" placeholder="enter your username.." required={true} className="mb-2" />
+                                <Form.Control ref={this.password} type="password" placeholder="enter password.." required={true} className="mb-2" />
+                                <button type="submit" className="buton mb-2">Submit</button>
+                            </Form>
+                            <Modal show={this.state.toast} onHide={this.toggleToast} backdrop="static">
+                                {
+                                    this.state.spinner
+                                    ?
+                                    <Modal.Header>Please Wait..<Spinner animation="border" /></ Modal.Header>
+                                    :
+                                    <Modal.Header closeButton>{this.state.data}</Modal.Header>
+                                } 
+                            </Modal> 
+                        </Col>
+                    </Row>
 
-            }
-            
-        </Col>
+                }
+                
+            </Col>
         )
     }
 }
