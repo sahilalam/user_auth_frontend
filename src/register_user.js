@@ -54,7 +54,7 @@ export default class RegisterUser extends React.Component{
             
         });
         data=await data.json();
-        this.setState({message:data.message+"Please Login to continue..",spinner:false});
+        this.setState({message:data.message,spinner:false});
         }
         catch(err)
         {
